@@ -16,7 +16,11 @@
 
 package com.team8.framusic;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 import com.team8.framusic.R;
 
@@ -42,6 +46,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.SimpleAdapter;
 import android.widget.Toast;
 
 public class MainActivity extends Activity {
@@ -53,6 +58,12 @@ public class MainActivity extends Activity {
 	private CharSequence mDrawerTitle;
 	private CharSequence mTitle;
 	private String[] mPreferenceTitle;
+	private String[] mPreferenceDescription;
+
+	private int[] images = new int[] { R.drawable.ic_action_settings,
+			R.drawable.ic_action_settings, R.drawable.ic_action_settings,
+			R.drawable.ic_action_settings, R.drawable.ic_action_settings,
+			R.drawable.ic_action_help, R.drawable.ic_action_about  };
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -63,19 +74,22 @@ public class MainActivity extends Activity {
 		mTitle = mDrawerTitle = getTitle();
 		mPreferenceTitle = getResources().getStringArray(
 				R.array.preference_array);
+		mPreferenceDescription = getResources().getStringArray(
+				R.array.preference_description);
 
 		mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
 		mDrawerList = (ListView) findViewById(R.id.left_drawer);
-		
+
 		// set a custom shadow that overlays the main content when the drawer
 		// opens
 		mDrawerLayout.setDrawerShadow(R.drawable.drawer_shadow,
 				GravityCompat.START);
 		// set up the drawer's list view with items and click listener
 
-		mDrawerList.setAdapter(new ArrayAdapter<String>(this,
-				R.layout.drawer_list_item, mPreferenceTitle));
-		
+		setAdapter();
+//		mDrawerList.setAdapter(new ArrayAdapter<String>(this,
+//				R.layout.drawer_list_item, mPreferenceTitle));
+
 		mDrawerList.setOnItemClickListener(new DrawerItemClickListener());
 
 		// enable ActionBar app icon to behave as action to toggle nav drawer
@@ -91,7 +105,7 @@ public class MainActivity extends Activity {
 		R.string.drawer_close /* "close drawer" description for accessibility */
 		) {
 			public void onDrawerClosed(View view) {
-				getActionBar().setTitle(mTitle);
+				//getActionBar().setTitle(mTitle);
 				invalidateOptionsMenu(); // creates call to
 											// onPrepareOptionsMenu()
 			}
@@ -219,5 +233,21 @@ public class MainActivity extends Activity {
 		super.onConfigurationChanged(newConfig);
 		// Pass any configuration change to the drawer toggls
 		mDrawerToggle.onConfigurationChanged(newConfig);
+	}
+
+	public void setAdapter() {
+		List<Map<String, Object>> listItems = new ArrayList<Map<String, Object>>();
+		for (int i = 0; i < mPreferenceTitle.length; i++) {
+			Map<String, Object> listItem = new HashMap<String, Object>();
+			listItem.put("preferenceTitle", this.mPreferenceTitle[i]);
+			listItem.put("images", images[i]);
+			listItem.put("preferenceDescription", mPreferenceDescription[i]);
+			listItems.add(listItem);
+		}
+		SimpleAdapter adapter = new SimpleAdapter(mContext, listItems,
+				R.layout.drawer_list_element, new String[] { "preferenceTitle",
+						"images", "preferenceDescription" }, new int[] { R.id.SettingTitle,
+						R.id.SettingImage, R.id.ItemDescription });
+		mDrawerList.setAdapter(adapter);
 	}
 }
