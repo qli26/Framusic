@@ -19,16 +19,14 @@
     <string name="app_name">FRAMUSIC</string>
 
     <string-array name="preference_array">
-        <item>Alarm</item>
-        <item>Battery Saving</item>
-        <item>Wizard</item>
-        <item>Settings</item>
-        <item>about</item>
-    </string-array>
-    <string-array name="layout_array">
         <item>Choose Gallery</item>
         <item>Choose Layout</item>
         <item>Playlist</item>
+        
+        <item>Alarm</item>
+        <item>Battery Saving</item>
+        <item>Wizard</item>
+        <item>About</item>
     </string-array>
 
     <string name="drawer_open">Open navigation drawer</string>
