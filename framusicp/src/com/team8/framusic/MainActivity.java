@@ -24,6 +24,7 @@ import java.util.Map;
 
 import com.team8.framusic.R;
 
+import android.app.ActionBar;
 import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
@@ -40,12 +41,19 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.View.OnClickListener;
+import android.view.View.OnTouchListener;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.SimpleAdapter;
 import android.widget.Toast;
 
@@ -58,12 +66,21 @@ public class MainActivity extends Activity {
 	private CharSequence mDrawerTitle;
 	private CharSequence mTitle;
 	private String[] mPreferenceTitle;
-	private String[] mPreferenceDescription;
 
 	private int[] images = new int[] { R.drawable.ic_action_settings,
 			R.drawable.ic_action_settings, R.drawable.ic_action_settings,
-			R.drawable.ic_action_settings, R.drawable.ic_action_settings,
-			R.drawable.ic_action_help, R.drawable.ic_action_about  };
+			R.drawable.ic_action_settings, R.drawable.ic_action_help,
+			R.drawable.ic_action_about };
+
+	private int[] imagesLine = new int[] { R.drawable.line, R.drawable.line,
+			R.drawable.line, R.drawable.line, R.drawable.line, R.drawable.line };
+
+	private boolean mActionBarOn;
+	private ActionBar mActionBar;
+	private Button mPreferenceButton;
+	private Button mChangeFolderButton;
+	private Button mLayoutSettingButton;
+	private Button mMusicSettingButton;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -74,8 +91,6 @@ public class MainActivity extends Activity {
 		mTitle = mDrawerTitle = getTitle();
 		mPreferenceTitle = getResources().getStringArray(
 				R.array.preference_array);
-		mPreferenceDescription = getResources().getStringArray(
-				R.array.preference_description);
 
 		mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
 		mDrawerList = (ListView) findViewById(R.id.left_drawer);
@@ -87,8 +102,8 @@ public class MainActivity extends Activity {
 		// set up the drawer's list view with items and click listener
 
 		setAdapter();
-//		mDrawerList.setAdapter(new ArrayAdapter<String>(this,
-//				R.layout.drawer_list_item, mPreferenceTitle));
+		// mDrawerList.setAdapter(new ArrayAdapter<String>(this,
+		// R.layout.drawer_list_item, mPreferenceTitle));
 
 		mDrawerList.setOnItemClickListener(new DrawerItemClickListener());
 
@@ -104,23 +119,90 @@ public class MainActivity extends Activity {
 		R.string.drawer_open, /* "open drawer" description for accessibility */
 		R.string.drawer_close /* "close drawer" description for accessibility */
 		) {
+
 			public void onDrawerClosed(View view) {
-				//getActionBar().setTitle(mTitle);
+				// getActionBar().setTitle(mTitle);
+				if (!mActionBarOn) {
+					showAll();
+				}
 				invalidateOptionsMenu(); // creates call to
 											// onPrepareOptionsMenu()
 			}
 
 			public void onDrawerOpened(View drawerView) {
 				getActionBar().setTitle(mDrawerTitle);
+				mActionBar = getActionBar();
+				if (mActionBarOn) {
+					hideAll();
+				}
 				invalidateOptionsMenu(); // creates call to
 											// onPrepareOptionsMenu()
 			}
 		};
 		mDrawerLayout.setDrawerListener(mDrawerToggle);
 
+		this.mPreferenceButton = (Button) findViewById(R.id.preference);
+		this.mLayoutSettingButton = (Button) findViewById(R.id.layoutSetting);
+		this.mMusicSettingButton = (Button) findViewById(R.id.musicSetting);
+		this.mChangeFolderButton = (Button) findViewById(R.id.changeFolder);
+
 		// if (savedInstanceState == null) {
 		// // selectItem(0);
 		// }
+		mActionBarOn = true;
+		RelativeLayout rl = (RelativeLayout) findViewById(R.id.content_frame);
+		rl.setOnTouchListener(new OnTouchListener() {
+
+			@Override
+			public boolean onTouch(View v, MotionEvent event) {
+				// TODO Auto-generated method stub
+				mActionBar = getActionBar();
+				if (mActionBarOn) {
+					hideAll();
+				} else {
+					showAll();
+				}
+				return false;
+			}
+		});
+	}
+
+	public void hideAll() {
+		Animation fadeout = AnimationUtils.loadAnimation(mContext,
+				R.anim.fadeout);
+		mActionBar.hide();
+
+		mPreferenceButton.startAnimation(fadeout);
+		mPreferenceButton.setVisibility(View.INVISIBLE);
+
+		mLayoutSettingButton.startAnimation(fadeout);
+		mLayoutSettingButton.setVisibility(View.INVISIBLE);
+
+		mMusicSettingButton.startAnimation(fadeout);
+		mMusicSettingButton.setVisibility(View.INVISIBLE);
+
+		mChangeFolderButton.startAnimation(fadeout);
+		mChangeFolderButton.setVisibility(View.INVISIBLE);
+		mActionBarOn = false;
+	}
+
+	public void showAll() {
+		Animation fadein = AnimationUtils
+				.loadAnimation(mContext, R.anim.fadein);
+		mActionBar.show();
+
+		mPreferenceButton.setAnimation(fadein);
+		mPreferenceButton.setVisibility(View.VISIBLE);
+
+		mLayoutSettingButton.setAnimation(fadein);
+		mLayoutSettingButton.setVisibility(View.VISIBLE);
+
+		mMusicSettingButton.setAnimation(fadein);
+		mMusicSettingButton.setVisibility(View.VISIBLE);
+
+		mChangeFolderButton.setAnimation(fadein);
+		mChangeFolderButton.setVisibility(View.VISIBLE);
+		mActionBarOn = true;
 	}
 
 	@Override
@@ -206,7 +288,7 @@ public class MainActivity extends Activity {
 			toast4.show();
 		}
 		mDrawerList.setItemChecked(position, true);
-		setTitle(mPreferenceTitle[position]);
+		// setTitle(mPreferenceTitle[position]);
 		mDrawerLayout.closeDrawer(mDrawerList);
 	}
 
@@ -241,13 +323,42 @@ public class MainActivity extends Activity {
 			Map<String, Object> listItem = new HashMap<String, Object>();
 			listItem.put("preferenceTitle", this.mPreferenceTitle[i]);
 			listItem.put("images", images[i]);
-			listItem.put("preferenceDescription", mPreferenceDescription[i]);
+			listItem.put("imageLine", imagesLine[i]);
 			listItems.add(listItem);
 		}
-		SimpleAdapter adapter = new SimpleAdapter(mContext, listItems,
-				R.layout.drawer_list_element, new String[] { "preferenceTitle",
-						"images", "preferenceDescription" }, new int[] { R.id.SettingTitle,
-						R.id.SettingImage, R.id.ItemDescription });
+		PreferenceSimpleAdapter adapter = new PreferenceSimpleAdapter(mContext,
+				listItems, R.layout.drawer_list_element, new String[] {
+						"preferenceTitle", "images", "imageLine" }, new int[] {
+						R.id.SettingTitle, R.id.SettingImage,
+						R.id.SettingLineImage });
+
 		mDrawerList.setAdapter(adapter);
+	}
+
+	@Override
+	public boolean onTouchEvent(MotionEvent event) {
+		// TODO Auto-generated method stub
+		int[] origin = new int[2];
+		switch (event.getAction()) {
+		// ´¥ÃþÆÁÄ»Ê±¿Ì
+		case MotionEvent.ACTION_DOWN:
+			Toast t = Toast.makeText(mContext,
+					event.getX() + ", " + event.getY(), Toast.LENGTH_LONG);
+			t.setGravity(Gravity.CENTER, 0, 0);
+			t.show();
+			break;
+		// ´¥Ãþ²¢ÒÆ¶¯Ê±¿Ì
+		case MotionEvent.ACTION_MOVE:
+			break;
+		// ÖÕÖ¹´¥ÃþÊ±¿Ì
+		case MotionEvent.ACTION_UP:
+			Toast t1 = Toast.makeText(mContext,
+					event.getX() + ", " + event.getY(), Toast.LENGTH_LONG);
+			t1.setGravity(Gravity.CENTER, 0, 0);
+			t1.show();
+			break;
+		}
+
+		return super.onTouchEvent(event);
 	}
 }
