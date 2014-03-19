@@ -342,10 +342,12 @@ public class MainActivity extends Activity {
 			toast2.show();
 			break;
 		case 3://Setting
-			Toast toast3 = Toast.makeText(mContext, mPreferenceTitle[position],
-					Toast.LENGTH_SHORT);
-			toast3.setGravity(Gravity.CENTER, 0, 0);
-			toast3.show();
+//			Toast toast3 = Toast.makeText(mContext, mPreferenceTitle[position],
+//					Toast.LENGTH_SHORT);
+//			toast3.setGravity(Gravity.CENTER, 0, 0);
+//			toast3.show();
+			Intent intentSettingPreference = new Intent(mContext, SettingPreference.class);
+			startActivity(intentSettingPreference);
 			break;
 		case 4://Wizard
 			Toast toast4 = Toast.makeText(mContext, mPreferenceTitle[position],
@@ -358,8 +360,8 @@ public class MainActivity extends Activity {
 //					Toast.LENGTH_SHORT);
 //			toast5.setGravity(Gravity.CENTER, 0, 0);
 //			toast5.show();
-			Intent intent = new Intent(mContext, AboutPreference.class);
-			startActivity(intent);
+			Intent intentAboutPreference = new Intent(mContext, AboutPreference.class);
+			startActivity(intentAboutPreference);
 			break;
 		}
 		mDrawerList.setItemChecked(position, true);
