@@ -36,7 +36,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
+		<activity android:name="com.team8.framusic.AboutPreference"
+		    android:theme="@style/PreferencesTheme"></activity>
     </application>
 
 </manifest>

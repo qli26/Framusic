@@ -21,6 +21,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import com.team8.framusic.R;
 
@@ -33,6 +35,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -108,8 +111,10 @@ public class MainActivity extends Activity {
 		mDrawerList.setOnItemClickListener(new DrawerItemClickListener());
 
 		// enable ActionBar app icon to behave as action to toggle nav drawer
-		getActionBar().setDisplayHomeAsUpEnabled(true);
-		getActionBar().setHomeButtonEnabled(true);
+
+		mActionBar = getActionBar();
+		mActionBar.setDisplayHomeAsUpEnabled(true);
+		mActionBar.setHomeButtonEnabled(true);
 
 		// ActionBarDrawerToggle ties together the the proper interactions
 		// between the sliding drawer and the action bar app icon
@@ -142,10 +147,47 @@ public class MainActivity extends Activity {
 		mDrawerLayout.setDrawerListener(mDrawerToggle);
 
 		this.mPreferenceButton = (Button) findViewById(R.id.preference);
-		this.mLayoutSettingButton = (Button) findViewById(R.id.layoutSetting);
-		this.mMusicSettingButton = (Button) findViewById(R.id.musicSetting);
-		this.mChangeFolderButton = (Button) findViewById(R.id.changeFolder);
+		this.mPreferenceButton.setOnClickListener(new OnClickListener() {
 
+			@Override
+			public void onClick(View arg0) {
+				// TODO Auto-generated method stub
+				mDrawerLayout.openDrawer(mDrawerList);
+			}
+
+		});
+
+		this.mLayoutSettingButton = (Button) findViewById(R.id.layoutSetting);
+		this.mLayoutSettingButton.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+				// goto layout Setting
+			}
+
+		});
+		this.mMusicSettingButton = (Button) findViewById(R.id.musicSetting);
+		this.mMusicSettingButton.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+				// goto music setting
+			}
+
+		});
+		this.mChangeFolderButton = (Button) findViewById(R.id.changeFolder);
+		this.mChangeFolderButton.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+				// goto ChangeFolderButton
+
+			}
+
+		});
 		// if (savedInstanceState == null) {
 		// // selectItem(0);
 		// }
@@ -156,7 +198,6 @@ public class MainActivity extends Activity {
 			@Override
 			public boolean onTouch(View v, MotionEvent event) {
 				// TODO Auto-generated method stub
-				mActionBar = getActionBar();
 				if (mActionBarOn) {
 					hideAll();
 				} else {
@@ -165,6 +206,8 @@ public class MainActivity extends Activity {
 				return false;
 			}
 		});
+
+		mHandler.sendEmptyMessageDelayed(HIDEALLELEMENTINSCREEN, 5000);
 	}
 
 	public void hideAll() {
@@ -184,7 +227,23 @@ public class MainActivity extends Activity {
 		mChangeFolderButton.startAnimation(fadeout);
 		mChangeFolderButton.setVisibility(View.INVISIBLE);
 		mActionBarOn = false;
+		mHandler.removeMessages(1);
 	}
+
+	final int HIDEALLELEMENTINSCREEN = 1;
+	private Handler mHandler = new Handler() {
+
+		public void handleMessage(android.os.Message msg) {
+			switch (msg.what) {
+			case HIDEALLELEMENTINSCREEN:
+				hideAll();
+				break;
+
+			default:
+				break;
+			}
+		};
+	};
 
 	public void showAll() {
 		Animation fadein = AnimationUtils
@@ -203,6 +262,9 @@ public class MainActivity extends Activity {
 		mChangeFolderButton.setAnimation(fadein);
 		mChangeFolderButton.setVisibility(View.VISIBLE);
 		mActionBarOn = true;
+
+		mHandler.removeMessages(HIDEALLELEMENTINSCREEN);
+		mHandler.sendEmptyMessageDelayed(HIDEALLELEMENTINSCREEN, 5000);
 	}
 
 	@Override
@@ -229,22 +291,22 @@ public class MainActivity extends Activity {
 			return true;
 		}
 		// Handle action buttons
-		// switch (item.getItemId()) {
-		// case R.id.action_websearch:
-		// // create intent to perform web search for this planet
-		// Intent intent = new Intent(Intent.ACTION_WEB_SEARCH);
-		// intent.putExtra(SearchManager.QUERY, getActionBar().getTitle());
-		// // catch event that there's no activity to handle intent
-		// if (intent.resolveActivity(getPackageManager()) != null) {
-		// startActivity(intent);
-		// } else {
-		// Toast.makeText(this, R.string.app_not_available,
-		// Toast.LENGTH_LONG).show();
-		// }
-		// return true;
-		// default:
-		return super.onOptionsItemSelected(item);
-		// }
+		switch (item.getItemId()) {
+//		case R.id.:
+//			// create intent to perform web search for this planet
+//			Intent intent = new Intent(Intent.ACTION_WEB_SEARCH);
+//			intent.putExtra(SearchManager.QUERY, getActionBar().getTitle());
+//			// catch event that there's no activity to handle intent
+//			if (intent.resolveActivity(getPackageManager()) != null) {
+//				startActivity(intent);
+//			} else {
+//				Toast.makeText(this, R.string.app_not_available,
+//						Toast.LENGTH_LONG).show();
+//			}
+//			return true;
+		default:
+			return super.onOptionsItemSelected(item);
+		}
 	}
 
 	/* The click listner for ListView in the navigation drawer */
@@ -261,31 +323,44 @@ public class MainActivity extends Activity {
 		// update the main content by replacing fragments
 		// update selected item and title, then close the drawer
 		switch (position) {
-		case 0:
+		case 0://Gallery
 			Toast toast = Toast.makeText(mContext, mPreferenceTitle[position],
 					Toast.LENGTH_SHORT);
 			toast.setGravity(Gravity.CENTER, 0, 0);
 			toast.show();
-		case 1:
+			break;
+		case 1://Layout
 			Toast toast1 = Toast.makeText(mContext, mPreferenceTitle[position],
 					Toast.LENGTH_SHORT);
 			toast1.setGravity(Gravity.CENTER, 0, 0);
 			toast1.show();
-		case 2:
+			break;
+		case 2://Playlist
 			Toast toast2 = Toast.makeText(mContext, mPreferenceTitle[position],
 					Toast.LENGTH_SHORT);
 			toast2.setGravity(Gravity.CENTER, 0, 0);
 			toast2.show();
-		case 3:
+			break;
+		case 3://Setting
 			Toast toast3 = Toast.makeText(mContext, mPreferenceTitle[position],
 					Toast.LENGTH_SHORT);
 			toast3.setGravity(Gravity.CENTER, 0, 0);
 			toast3.show();
-		case 4:
+			break;
+		case 4://Wizard
 			Toast toast4 = Toast.makeText(mContext, mPreferenceTitle[position],
 					Toast.LENGTH_SHORT);
 			toast4.setGravity(Gravity.CENTER, 0, 0);
 			toast4.show();
+			break;
+		case 5://About
+//			Toast toast5 = Toast.makeText(mContext, mPreferenceTitle[position],
+//					Toast.LENGTH_SHORT);
+//			toast5.setGravity(Gravity.CENTER, 0, 0);
+//			toast5.show();
+			Intent intent = new Intent(mContext, AboutPreference.class);
+			startActivity(intent);
+			break;
 		}
 		mDrawerList.setItemChecked(position, true);
 		// setTitle(mPreferenceTitle[position]);
@@ -333,32 +408,5 @@ public class MainActivity extends Activity {
 						R.id.SettingLineImage });
 
 		mDrawerList.setAdapter(adapter);
-	}
-
-	@Override
-	public boolean onTouchEvent(MotionEvent event) {
-		// TODO Auto-generated method stub
-		int[] origin = new int[2];
-		switch (event.getAction()) {
-		// ´¥ÃþÆÁÄ»Ê±¿Ì
-		case MotionEvent.ACTION_DOWN:
-			Toast t = Toast.makeText(mContext,
-					event.getX() + ", " + event.getY(), Toast.LENGTH_LONG);
-			t.setGravity(Gravity.CENTER, 0, 0);
-			t.show();
-			break;
-		// ´¥Ãþ²¢ÒÆ¶¯Ê±¿Ì
-		case MotionEvent.ACTION_MOVE:
-			break;
-		// ÖÕÖ¹´¥ÃþÊ±¿Ì
-		case MotionEvent.ACTION_UP:
-			Toast t1 = Toast.makeText(mContext,
-					event.getX() + ", " + event.getY(), Toast.LENGTH_LONG);
-			t1.setGravity(Gravity.CENTER, 0, 0);
-			t1.show();
-			break;
-		}
-
-		return super.onTouchEvent(event);
 	}
 }
