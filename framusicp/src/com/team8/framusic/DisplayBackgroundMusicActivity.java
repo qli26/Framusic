@@ -497,20 +497,6 @@ public class DisplayBackgroundMusicActivity extends Activity {
 	}
 
 	@Override
-	protected void onPause() {
-		// TODO Auto-generated method stub
-		System.out.println("Main pause");
-		super.onPause();
-	}
-
-	@Override
-	protected void onResume() {
-		// TODO Auto-generated method stub
-		System.out.println("Main resume");
-		super.onResume();
-	}
-
-	@Override
 	protected void onNewIntent(Intent intent) {
 		// TODO Auto-generated method stub
 		super.onNewIntent(intent);
