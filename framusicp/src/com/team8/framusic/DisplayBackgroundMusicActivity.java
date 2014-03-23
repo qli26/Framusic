@@ -64,7 +64,7 @@ import android.widget.RelativeLayout;
 import android.widget.SimpleAdapter;
 import android.widget.Toast;
 
-public class MainActivity extends Activity {
+public class DisplayBackgroundMusicActivity extends Activity {
 	private Context mContext = null;
 	private DrawerLayout mDrawerLayout;
 	private ListView mDrawerList;
@@ -89,13 +89,14 @@ public class MainActivity extends Activity {
 	private Button mLayoutSettingButton;
 	private Button mMusicSettingButton;
 
-    private BroadcastReceiver batteryLevelRcvr;  
-    private IntentFilter batteryLevelFilter;  
-	
+	private BroadcastReceiver batteryLevelRcvr;
+	private IntentFilter batteryLevelFilter;
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
+		processExtraData();
 
 		mContext = this;
 		mTitle = mDrawerTitle = getTitle();
@@ -215,7 +216,7 @@ public class MainActivity extends Activity {
 		});
 
 		mHandler.sendEmptyMessageDelayed(HIDEALLELEMENTINSCREEN, 5000);
-		
+
 		monitorBatteryState();
 	}
 
@@ -301,18 +302,18 @@ public class MainActivity extends Activity {
 		}
 		// Handle action buttons
 		switch (item.getItemId()) {
-//		case R.id.:
-//			// create intent to perform web search for this planet
-//			Intent intent = new Intent(Intent.ACTION_WEB_SEARCH);
-//			intent.putExtra(SearchManager.QUERY, getActionBar().getTitle());
-//			// catch event that there's no activity to handle intent
-//			if (intent.resolveActivity(getPackageManager()) != null) {
-//				startActivity(intent);
-//			} else {
-//				Toast.makeText(this, R.string.app_not_available,
-//						Toast.LENGTH_LONG).show();
-//			}
-//			return true;
+		// case R.id.:
+		// // create intent to perform web search for this planet
+		// Intent intent = new Intent(Intent.ACTION_WEB_SEARCH);
+		// intent.putExtra(SearchManager.QUERY, getActionBar().getTitle());
+		// // catch event that there's no activity to handle intent
+		// if (intent.resolveActivity(getPackageManager()) != null) {
+		// startActivity(intent);
+		// } else {
+		// Toast.makeText(this, R.string.app_not_available,
+		// Toast.LENGTH_LONG).show();
+		// }
+		// return true;
 		default:
 			return super.onOptionsItemSelected(item);
 		}
@@ -332,44 +333,48 @@ public class MainActivity extends Activity {
 		// update the main content by replacing fragments
 		// update selected item and title, then close the drawer
 		switch (position) {
-		case 0://Gallery
+		case 0:// Gallery
 			Toast toast = Toast.makeText(mContext, mPreferenceTitle[position],
 					Toast.LENGTH_SHORT);
 			toast.setGravity(Gravity.CENTER, 0, 0);
 			toast.show();
 			break;
-		case 1://Layout
+		case 1:// Layout
 			Toast toast1 = Toast.makeText(mContext, mPreferenceTitle[position],
 					Toast.LENGTH_SHORT);
 			toast1.setGravity(Gravity.CENTER, 0, 0);
 			toast1.show();
 			break;
-		case 2://Playlist
+		case 2:// Playlist
 			Toast toast2 = Toast.makeText(mContext, mPreferenceTitle[position],
 					Toast.LENGTH_SHORT);
 			toast2.setGravity(Gravity.CENTER, 0, 0);
 			toast2.show();
 			break;
-		case 3://Setting
-//			Toast toast3 = Toast.makeText(mContext, mPreferenceTitle[position],
-//					Toast.LENGTH_SHORT);
-//			toast3.setGravity(Gravity.CENTER, 0, 0);
-//			toast3.show();
-			Intent intentSettingPreference = new Intent(mContext, SettingPreference.class);
+		case 3:// Setting
+				// Toast toast3 = Toast.makeText(mContext,
+				// mPreferenceTitle[position],
+				// Toast.LENGTH_SHORT);
+				// toast3.setGravity(Gravity.CENTER, 0, 0);
+				// toast3.show();
+			Intent intentSettingPreference = new Intent(mContext,
+					SettingPreference.class);
 			startActivity(intentSettingPreference);
 			break;
-		case 4://Wizard
+		case 4:// Wizard
 			Toast toast4 = Toast.makeText(mContext, mPreferenceTitle[position],
 					Toast.LENGTH_SHORT);
 			toast4.setGravity(Gravity.CENTER, 0, 0);
 			toast4.show();
 			break;
-		case 5://About
-//			Toast toast5 = Toast.makeText(mContext, mPreferenceTitle[position],
-//					Toast.LENGTH_SHORT);
-//			toast5.setGravity(Gravity.CENTER, 0, 0);
-//			toast5.show();
-			Intent intentAboutPreference = new Intent(mContext, AboutPreference.class);
+		case 5:// About
+				// Toast toast5 = Toast.makeText(mContext,
+				// mPreferenceTitle[position],
+				// Toast.LENGTH_SHORT);
+				// toast5.setGravity(Gravity.CENTER, 0, 0);
+				// toast5.show();
+			Intent intentAboutPreference = new Intent(mContext,
+					AboutPreference.class);
 			startActivity(intentAboutPreference);
 			break;
 		}
@@ -420,71 +425,104 @@ public class MainActivity extends Activity {
 
 		mDrawerList.setAdapter(adapter);
 	}
-	
-	private void monitorBatteryState() {  
-        batteryLevelRcvr = new BroadcastReceiver() {  
-  
-            public void onReceive(Context context, Intent intent) {  
-                StringBuilder sb = new StringBuilder();  
-                int rawlevel = intent.getIntExtra("level", -1);  
-                int scale = intent.getIntExtra("scale", -1);  
-                int status = intent.getIntExtra("status", -1);  
-                int health = intent.getIntExtra("health", -1);  
-                int level = -1; // percentage, or -1 for unknown  
-                if (rawlevel >= 0 && scale > 0) {  
-                    level = (rawlevel * 100) / scale;  
-                }  
-                sb.append("The phone");  
-                if (BatteryManager.BATTERY_HEALTH_OVERHEAT == health) {  
-                    sb.append("'s battery feels very hot!");  
-                } else {  
-                    switch (status) {  
-                    case BatteryManager.BATTERY_STATUS_UNKNOWN:  
-                        sb.append("no battery.");  
-                        break;  
-                    case BatteryManager.BATTERY_STATUS_CHARGING:  
-                        sb.append("'s battery");  
-                        if (level <= 33)  
-                            sb.append(" is charging, battery level is low"  
-                                    + "[" + level + "]");  
-                        else if (level <= 84)  
-                            sb.append(" is charging." + "[" + level + "]");  
-                        else  
-                            sb.append(" will be fully charged.");  
-                        break;  
-                    case BatteryManager.BATTERY_STATUS_DISCHARGING:  
-                    case BatteryManager.BATTERY_STATUS_NOT_CHARGING:  
-                        if (level == 0)  
-                            sb.append(" needs charging right away.");  
-                        else if (level > 0 && level <= 33)  //add what to do in this part for low battery
-                            sb.append(" is about ready to be recharged, battery level is low"  
-                                    + "[" + level + "]");  
-                        else  
-                            sb.append("'s battery level is" + "[" + level + "]");  
-                        break;  
-                    case BatteryManager.BATTERY_STATUS_FULL:  
-                        sb.append(" is fully charged.");  
-                        break;  
-                    default:  
-                        sb.append("'s battery is indescribable!");  
-                        break;  
-                    }  
-                }  
-                sb.append(' ');  
-                //Toast.makeText(mContext, sb.toString(), Toast.LENGTH_SHORT).show();
-                AlertDialog.Builder ab = new AlertDialog.Builder(mContext);
-                ab.setTitle(sb);
-                ab.create();
-                ab.show();
-            }  
-        };  
-        batteryLevelFilter = new IntentFilter(Intent.ACTION_BATTERY_CHANGED);  
-        registerReceiver(batteryLevelRcvr, batteryLevelFilter);  
-    }  
-	
-    @Override  
-    protected void onDestroy() {  
-        super.onDestroy();  
-        unregisterReceiver(batteryLevelRcvr);  
-    }  
+
+	private void monitorBatteryState() {
+		batteryLevelRcvr = new BroadcastReceiver() {
+
+			public void onReceive(Context context, Intent intent) {
+				StringBuilder sb = new StringBuilder();
+				int rawlevel = intent.getIntExtra("level", -1);
+				int scale = intent.getIntExtra("scale", -1);
+				int status = intent.getIntExtra("status", -1);
+				int health = intent.getIntExtra("health", -1);
+				int level = -1; // percentage, or -1 for unknown
+				if (rawlevel >= 0 && scale > 0) {
+					level = (rawlevel * 100) / scale;
+				}
+				sb.append("The phone");
+				if (BatteryManager.BATTERY_HEALTH_OVERHEAT == health) {
+					sb.append("'s battery feels very hot!");
+				} else {
+					switch (status) {
+					case BatteryManager.BATTERY_STATUS_UNKNOWN:
+						sb.append("no battery.");
+						break;
+					case BatteryManager.BATTERY_STATUS_CHARGING:
+						sb.append("'s battery");
+						if (level <= 33)
+							sb.append(" is charging, battery level is low"
+									+ "[" + level + "]");
+						else if (level <= 84)
+							sb.append(" is charging." + "[" + level + "]");
+						else
+							sb.append(" will be fully charged.");
+						break;
+					case BatteryManager.BATTERY_STATUS_DISCHARGING:
+					case BatteryManager.BATTERY_STATUS_NOT_CHARGING:
+						if (level == 0)
+							sb.append(" needs charging right away.");
+						else if (level > 0 && level <= 33) // add what to do in
+															// this part for low
+															// battery
+							sb.append(" is about ready to be recharged, battery level is low"
+									+ "[" + level + "]");
+						else
+							sb.append("'s battery level is" + "[" + level + "]");
+						break;
+					case BatteryManager.BATTERY_STATUS_FULL:
+						sb.append(" is fully charged.");
+						break;
+					default:
+						sb.append("'s battery is indescribable!");
+						break;
+					}
+				}
+				sb.append(' ');
+				// Toast.makeText(mContext, sb.toString(),
+				// Toast.LENGTH_SHORT).show();
+				// AlertDialog.Builder ab = new AlertDialog.Builder(mContext);
+				// ab.setTitle(sb);
+				// ab.create();
+				// ab.show();
+			}
+		};
+		batteryLevelFilter = new IntentFilter(Intent.ACTION_BATTERY_CHANGED);
+		registerReceiver(batteryLevelRcvr, batteryLevelFilter);
+	}
+
+	@Override
+	protected void onDestroy() {
+		super.onDestroy();
+		unregisterReceiver(batteryLevelRcvr);
+	}
+
+	@Override
+	protected void onPause() {
+		// TODO Auto-generated method stub
+		System.out.println("Main pause");
+		super.onPause();
+	}
+
+	@Override
+	protected void onResume() {
+		// TODO Auto-generated method stub
+		System.out.println("Main resume");
+		super.onResume();
+	}
+
+	@Override
+	protected void onNewIntent(Intent intent) {
+		// TODO Auto-generated method stub
+		super.onNewIntent(intent);
+		setIntent(intent);// must store the new intent unless getIntent() will
+							// return the old one
+		processExtraData();
+	}
+
+	private void processExtraData() {
+		// TODO Auto-generated method stub
+		Intent intent = getIntent();
+		// use the data received here
+
+	}
 }
