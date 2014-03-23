@@ -28,12 +28,16 @@ import com.team8.framusic.R;
 
 import android.app.ActionBar;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.SearchManager;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.res.Configuration;
+import android.os.BatteryManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.ActionBarDrawerToggle;
@@ -85,6 +89,9 @@ public class MainActivity extends Activity {
 	private Button mLayoutSettingButton;
 	private Button mMusicSettingButton;
 
+    private BroadcastReceiver batteryLevelRcvr;  
+    private IntentFilter batteryLevelFilter;  
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -208,6 +215,8 @@ public class MainActivity extends Activity {
 		});
 
 		mHandler.sendEmptyMessageDelayed(HIDEALLELEMENTINSCREEN, 5000);
+		
+		monitorBatteryState();
 	}
 
 	public void hideAll() {
@@ -411,4 +420,71 @@ public class MainActivity extends Activity {
 
 		mDrawerList.setAdapter(adapter);
 	}
+	
+	private void monitorBatteryState() {  
+        batteryLevelRcvr = new BroadcastReceiver() {  
+  
+            public void onReceive(Context context, Intent intent) {  
+                StringBuilder sb = new StringBuilder();  
+                int rawlevel = intent.getIntExtra("level", -1);  
+                int scale = intent.getIntExtra("scale", -1);  
+                int status = intent.getIntExtra("status", -1);  
+                int health = intent.getIntExtra("health", -1);  
+                int level = -1; // percentage, or -1 for unknown  
+                if (rawlevel >= 0 && scale > 0) {  
+                    level = (rawlevel * 100) / scale;  
+                }  
+                sb.append("The phone");  
+                if (BatteryManager.BATTERY_HEALTH_OVERHEAT == health) {  
+                    sb.append("'s battery feels very hot!");  
+                } else {  
+                    switch (status) {  
+                    case BatteryManager.BATTERY_STATUS_UNKNOWN:  
+                        sb.append("no battery.");  
+                        break;  
+                    case BatteryManager.BATTERY_STATUS_CHARGING:  
+                        sb.append("'s battery");  
+                        if (level <= 33)  
+                            sb.append(" is charging, battery level is low"  
+                                    + "[" + level + "]");  
+                        else if (level <= 84)  
+                            sb.append(" is charging." + "[" + level + "]");  
+                        else  
+                            sb.append(" will be fully charged.");  
+                        break;  
+                    case BatteryManager.BATTERY_STATUS_DISCHARGING:  
+                    case BatteryManager.BATTERY_STATUS_NOT_CHARGING:  
+                        if (level == 0)  
+                            sb.append(" needs charging right away.");  
+                        else if (level > 0 && level <= 33)  //add what to do in this part for low battery
+                            sb.append(" is about ready to be recharged, battery level is low"  
+                                    + "[" + level + "]");  
+                        else  
+                            sb.append("'s battery level is" + "[" + level + "]");  
+                        break;  
+                    case BatteryManager.BATTERY_STATUS_FULL:  
+                        sb.append(" is fully charged.");  
+                        break;  
+                    default:  
+                        sb.append("'s battery is indescribable!");  
+                        break;  
+                    }  
+                }  
+                sb.append(' ');  
+                //Toast.makeText(mContext, sb.toString(), Toast.LENGTH_SHORT).show();
+                AlertDialog.Builder ab = new AlertDialog.Builder(mContext);
+                ab.setTitle(sb);
+                ab.create();
+                ab.show();
+            }  
+        };  
+        batteryLevelFilter = new IntentFilter(Intent.ACTION_BATTERY_CHANGED);  
+        registerReceiver(batteryLevelRcvr, batteryLevelFilter);  
+    }  
+	
+    @Override  
+    protected void onDestroy() {  
+        super.onDestroy();  
+        unregisterReceiver(batteryLevelRcvr);  
+    }  
 }

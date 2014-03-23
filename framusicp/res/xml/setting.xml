@@ -14,15 +14,15 @@
         <SwitchPreference
             android:key="stop_slide"
             android:layout="@layout/settingpreference"
-            android:title="Stop Sliding Show" android:selectable="false"/>
+            android:title="Stop Sliding Show" android:selectable="false" android:switchTextOn="ON" android:switchTextOff="OFF"/>
         <SwitchPreference
             android:key="stop_music"
             android:layout="@layout/settingpreference"
-            android:title="Stop Playing Music" android:selectable="false"/>
+            android:title="Stop Playing Music" android:selectable="false" android:switchTextOn="ON" android:switchTextOff="OFF"/>
         <SwitchPreference
             android:key="quit_app"
             android:layout="@layout/settingpreference"
-            android:title="Quit Framusic" android:selectable="false"/>
+            android:title="Quit Framusic" android:selectable="false" android:switchTextOn="ON" android:switchTextOff="OFF"/>
     </PreferenceCategory>
     <PreferenceCategory
         android:key="alarm_key"

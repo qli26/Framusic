@@ -37,13 +37,13 @@ public class SettingPreference extends PreferenceActivity {
 	private SwitchPreference mAlarm = null;
 	private Preference mStartPlayingMusic = null;
 	private Preference mStopPlayingMusic = null;
-	
+
 	private int prog = 0;
 	private String time;
 	private String batterySummery;
 	private String startPlayingMusicSummery;
 	private String stopPlayingMusicSummery;
-	
+
 	public SettingPreference() {
 		// TODO Auto-generated constructor stub
 	}
@@ -125,33 +125,40 @@ public class SettingPreference extends PreferenceActivity {
 					}
 
 				});
-		
-		this.mStartPlayingMusic.setOnPreferenceClickListener(new OnPreferenceClickListener(){
 
-			@Override
-			public boolean onPreferenceClick(Preference preference) {
-				// TODO Auto-generated method stub
-				displayTimePickerDialog("StartPlayingMusic", mStartPlayingMusic);
-				return false;
-			}
-			
-		});;
-		this.mStopPlayingMusic.setOnPreferenceClickListener(new OnPreferenceClickListener(){
+		this.mStartPlayingMusic
+				.setOnPreferenceClickListener(new OnPreferenceClickListener() {
 
-			@Override
-			public boolean onPreferenceClick(Preference preference) {
-				// TODO Auto-generated method stub
+					@Override
+					public boolean onPreferenceClick(Preference preference) {
+						// TODO Auto-generated method stub
+						displayTimePickerDialog("StartPlayingMusic",
+								mStartPlayingMusic);
+						return false;
+					}
 
-				displayTimePickerDialog("StopPlayingMusic", mStopPlayingMusic);
-				return false;
-			}
-			
-		});
-		//need to write into string.xml
+				});
+		;
+		this.mStopPlayingMusic
+				.setOnPreferenceClickListener(new OnPreferenceClickListener() {
+
+					@Override
+					public boolean onPreferenceClick(Preference preference) {
+						// TODO Auto-generated method stub
+
+						displayTimePickerDialog("StopPlayingMusic",
+								mStopPlayingMusic);
+						return false;
+					}
+
+				});
+		// need to write into string.xml
 		batterySummery = mBattryBottomLine.getSummary().toString();
-		
-		startPlayingMusicSummery = this.mStartPlayingMusic.getSummary().toString();
-		stopPlayingMusicSummery = this.mStopPlayingMusic.getSummary().toString();
+
+		startPlayingMusicSummery = this.mStartPlayingMusic.getSummary()
+				.toString();
+		stopPlayingMusicSummery = this.mStopPlayingMusic.getSummary()
+				.toString();
 	}
 
 	private void displayBatteryBottomLineDialog(String title) {
@@ -185,8 +192,9 @@ public class SettingPreference extends PreferenceActivity {
 			@Override
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
-				//add service for battery
-				String s= batterySummery.concat(new Integer(prog).toString() + "%");
+				// add service for battery
+				String s = batterySummery.concat(new Integer(prog).toString()
+						+ "%");
 				mBattryBottomLine.setSummary(s);
 				dialog.dismiss();
 			}
@@ -273,10 +281,30 @@ public class SettingPreference extends PreferenceActivity {
 			@Override
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
-				//add service for battery
-				TimePicker t = (TimePicker)dialog.findViewById(R.id.timePicker1);
+				// add service for battery
+				TimePicker t = (TimePicker) dialog
+						.findViewById(R.id.timePicker1);
 				
-				p.setSummary(startPlayingMusicSummery + t.getCurrentHour()+":"+t.getCurrentMinute());
+				int h = t.getCurrentHour();
+				int m = t.getCurrentMinute();
+				
+				String hs=new Integer(h).toString();
+				String ms=new Integer(m).toString();
+				if(h<10){
+					hs = "0" + hs;
+				}
+				if(m<10){
+					ms = "0" + ms;
+				}
+
+				if (p.getTitle().equals("Start Playing Music")) {
+					p.setSummary(startPlayingMusicSummery + hs
+							+ ":" + ms);
+				} else if (p.getTitle().equals("Stop Playing Music")) {
+					p.setSummary(stopPlayingMusicSummery + hs
+							+ ":" + ms);
+				}
+
 				dialog.dismiss();
 			}
 		});
@@ -294,7 +322,6 @@ public class SettingPreference extends PreferenceActivity {
 
 	}
 
-	
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		// The action bar home/up action should open or close the drawer.

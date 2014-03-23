@@ -48,6 +48,10 @@
             android:name="com.team8.framusic.SettingPreference"
             android:theme="@style/PreferencesTheme" >
         </activity>
+
+        <service
+            android:name=".MainActivity"
+            android:enabled="true" />
     </application>
 
 </manifest>
