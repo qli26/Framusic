@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+
+    <TableLayout
+        android:id="@+id/tableLayout2"
+        android:layout_width="200dp"
+        android:layout_height="250dp"
+        android:layout_margin="60dp" >
+
+        <TableRow
+            android:id="@+id/tableRow1"
+            android:layout_width="200dp"
+            android:layout_height="250dp"
+            android:background="#FFF0FF" >
+
+            <Button
+                android:id="@+id/btn1"
+                android:layout_width="200dp"
+                android:layout_height="250dp"
+                android:text="+" />
+            <ImageView 
+                android:id="@+id/image1"
+                android:layout_width="200dp"
+                android:layout_height="250dp"/>
+        </TableRow>
+
+        
+    </TableLayout>
+
+</LinearLayout>

@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+
+    <!-- 
+    
+   <TableLayout
+        android:id="@+id/tableLayout1"
+        android:layout_width="130dp"
+        android:layout_height="150dp"
+        android:layout_margin="30dip" >   
+        <TableRow
+            android:id="@+id/tableRow1.1"
+            android:layout_width="130dp"
+            android:layout_height="75dp"
+            android:background="#FFF0FF" >
+            <Button
+                android:id="@+id/image1.1"
+                android:layout_width="130dp"
+                android:layout_height="75dp"
+                android:text="+"/>
+        </TableRow>    
+		<TableRow
+		    android:id="@+id/tableRow1.2"
+		    android:layout_width="130dp"
+		    android:layout_height="75dp"
+		    android:background="#FFF0FF" >
+		    <Button
+		        android:id="@+id/image1.2"
+		        android:layout_width="130dp"
+		        android:layout_height="75dp"
+		        android:text="+" />
+		</TableRow>      
+   </TableLayout>
+
+   <TableLayout
+       android:id="@+id/tableLayout2"
+       android:layout_width="130dp"
+       android:layout_height="150dp"
+       android:layout_alignTop="@+id/tableLayout1"
+       android:layout_toRightOf="@+id/tableLayout1" >
+
+       <TableRow
+           android:id="@+id/tableRow2.1"
+           android:layout_width="130dp"
+           android:layout_height="150dp"
+           android:background="#FFF0FF" >
+
+           <Button
+               android:id="@+id/image2.1"
+               android:layout_width="65dp"
+               android:layout_height="150dp"
+               android:text="+" />
+           <Button 
+               android:id="@+id/image2.2"
+               android:layout_width="65dp"
+               android:layout_height="150dp"
+               android:text="+"/>
+       </TableRow>
+   </TableLayout>
+   
+   <TableLayout
+        android:id="@+id/tableLayout3"
+        android:layout_width="130dp"
+        android:layout_height="150dp"
+        android:layout_alignRight="@+id/tableLayout1"
+        android:layout_below="@+id/tableLayout1" >   
+        <TableRow
+            android:id="@+id/tableRow3.1"
+            android:layout_width="130dp"
+            android:layout_height="50dp"
+            android:background="#FFF0FF" >
+            <Button
+                android:id="@+id/image3.1"
+                android:layout_width="130dp"
+                android:layout_height="50dp"
+                android:text="+"/>
+        </TableRow>    
+		<TableRow
+		    android:id="@+id/tableRow3.2"
+		    android:layout_width="130dp"
+		    android:layout_height="50dp"
+		    android:background="#FFF0FF" >
+		    <Button
+		        android:id="@+id/image3.2"
+		        android:layout_width="130dp"
+		        android:layout_height="50dp"
+		        android:text="+" />
+		</TableRow> 
+		<TableRow
+		    android:id="@+id/tableRow3.3"
+		    android:layout_width="130dp"
+		    android:layout_height="50dp"
+		    android:background="#FFF0FF" >
+		    <Button
+		        android:id="@+id/image3.3"
+		        android:layout_width="130dp"
+		        android:layout_height="50dp"
+		        android:text="+" />
+		</TableRow>      
+   </TableLayout>
+   
+   <TableLayout
+        android:id="@+id/tableLayout4"
+        android:layout_width="130dp"
+        android:layout_height="150dp"
+        android:layout_alignTop="@+id/tableLayout3"
+       android:layout_alignRight="@+id/tableLayout2" >   
+        <TableRow
+            android:id="@+id/tableRow4.1"
+            android:layout_width="130dp"
+            android:layout_height="75dp"
+            android:background="#FFF0FF" >
+            <Button
+                android:id="@+id/image4.1"
+                android:layout_width="65dp"
+                android:layout_height="75dp"
+                android:text="+"/>
+
+            <Button
+                android:id="@+id/image4.2"
+                android:layout_width="65dp"
+                android:layout_height="75dp"
+                android:text="+" />
+
+        </TableRow>    
+		<TableRow
+		    android:id="@+id/tableRow4.2"
+		    android:layout_width="130dp"
+		    android:layout_height="75dp"
+		    android:background="#FFF0FF" >
+		    <Button
+		        android:id="@+id/image4.3"
+		        android:layout_width="65dp"
+		        android:layout_height="75dp"
+		        android:text="+" />
+		    <Button
+		        android:id="@+id/image4.4"
+		        android:layout_width="65dp"
+		        android:layout_height="75dp"
+		        android:text="+" />
+		</TableRow>      
+   </TableLayout>
+   
+    -->
+
+    <ImageButton
+        android:id="@+id/layout1"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_margin="50dp"
+        android:src="@drawable/layout1" />
+    
+    <ImageButton
+        android:id="@+id/layout2"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_alignTop="@+id/layout1"
+        android:layout_toRightOf="@+id/layout1"
+        android:src="@drawable/layout2" />
+
+    <ImageButton
+        android:id="@+id/layout3"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_alignTop="@+id/layout2"
+        android:layout_marginLeft="34dp"
+        android:layout_toRightOf="@+id/layout2"
+        android:src="@drawable/layout3" />
+    
+    <ImageButton
+        android:id="@+id/layout4"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_alignRight="@+id/layout1"
+        android:layout_below="@+id/layout1"
+        android:src="@drawable/layout6" />
+
+    <ImageButton
+        android:id="@+id/layout5"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_alignTop="@+id/layout4"
+        android:layout_toRightOf="@+id/layout1"
+        android:src="@drawable/layout5" />
+
+    <ImageButton
+        android:id="@+id/layout6"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_alignLeft="@+id/layout3"
+        android:layout_below="@+id/layout1"
+        android:src="@drawable/layout4" />
+    
+</RelativeLayout>
