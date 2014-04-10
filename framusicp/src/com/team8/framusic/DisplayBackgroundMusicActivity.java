@@ -17,6 +17,7 @@
 package com.team8.framusic;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -28,18 +29,22 @@ import com.team8.framusic.R;
 
 import android.app.ActionBar;
 import android.app.Activity;
+import android.app.AlarmManager;
 import android.app.AlertDialog;
 import android.app.Fragment;
 import android.app.FragmentManager;
+import android.app.PendingIntent;
 import android.app.SearchManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.os.BatteryManager;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.SystemClock;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -59,6 +64,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.SimpleAdapter;
@@ -84,21 +90,40 @@ public class DisplayBackgroundMusicActivity extends Activity {
 
 	private boolean mActionBarOn;
 	private ActionBar mActionBar;
-	private Button mPreferenceButton;
-	private Button mChangeFolderButton;
-	private Button mLayoutSettingButton;
-	private Button mMusicSettingButton;
+
+	// private Button mPreferenceButton;
+	// private Button mChangeFolderButton;
+	// private Button mLayoutSettingButton;
+	// private Button mMusicSettingButton;
+
+	private Button mShuffle;
+	private Button mPrevious;
+	private Button mPlayStopMusic;
+	private Button mNext;
+	private Button mRepeat;
 
 	private BroadcastReceiver batteryLevelRcvr;
 	private IntentFilter batteryLevelFilter;
+
+	private int prog = 0;
+	private boolean alarmOnOff;
+	private int startTimeHour;
+	private int startTimeMinute;
+	private int stopTimeHour;
+	private int stopTimeMinute;
+
+	private PendingIntent mAlarmStopSender;
+	private PendingIntent mAlarmStartSender;
+	boolean playing = true;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
+		mContext = this;
+
 		processExtraData();
 
-		mContext = this;
 		mTitle = mDrawerTitle = getTitle();
 		mPreferenceTitle = getResources().getStringArray(
 				R.array.preference_array);
@@ -154,48 +179,49 @@ public class DisplayBackgroundMusicActivity extends Activity {
 		};
 		mDrawerLayout.setDrawerListener(mDrawerToggle);
 
-		this.mPreferenceButton = (Button) findViewById(R.id.preference);
-		this.mPreferenceButton.setOnClickListener(new OnClickListener() {
-
-			@Override
-			public void onClick(View arg0) {
-				// TODO Auto-generated method stub
-				mDrawerLayout.openDrawer(mDrawerList);
-			}
-
-		});
-
-		this.mLayoutSettingButton = (Button) findViewById(R.id.layoutSetting);
-		this.mLayoutSettingButton.setOnClickListener(new OnClickListener() {
-
-			@Override
-			public void onClick(View v) {
-				// TODO Auto-generated method stub
-				// goto layout Setting
-			}
-
-		});
-		this.mMusicSettingButton = (Button) findViewById(R.id.musicSetting);
-		this.mMusicSettingButton.setOnClickListener(new OnClickListener() {
-
-			@Override
-			public void onClick(View v) {
-				// TODO Auto-generated method stub
-				// goto music setting
-			}
-
-		});
-		this.mChangeFolderButton = (Button) findViewById(R.id.changeFolder);
-		this.mChangeFolderButton.setOnClickListener(new OnClickListener() {
-
-			@Override
-			public void onClick(View v) {
-				// TODO Auto-generated method stub
-				// goto ChangeFolderButton
-
-			}
-
-		});
+		// this.mPreferenceButton = (Button) findViewById(R.id.preference);
+		// this.mPreferenceButton.setOnClickListener(new OnClickListener() {
+		//
+		// @Override
+		// public void onClick(View arg0) {
+		// // TODO Auto-generated method stub
+		// mDrawerLayout.openDrawer(mDrawerList);
+		// }
+		//
+		// });
+		//
+		// this.mLayoutSettingButton = (Button)
+		// findViewById(R.id.layoutSetting);
+		// this.mLayoutSettingButton.setOnClickListener(new OnClickListener() {
+		//
+		// @Override
+		// public void onClick(View v) {
+		// // TODO Auto-generated method stub
+		// // goto layout Setting
+		// }
+		//
+		// });
+		// this.mMusicSettingButton = (Button) findViewById(R.id.musicSetting);
+		// this.mMusicSettingButton.setOnClickListener(new OnClickListener() {
+		//
+		// @Override
+		// public void onClick(View v) {
+		// // TODO Auto-generated method stub
+		// // goto music setting
+		// }
+		//
+		// });
+		// this.mChangeFolderButton = (Button) findViewById(R.id.changeFolder);
+		// this.mChangeFolderButton.setOnClickListener(new OnClickListener() {
+		//
+		// @Override
+		// public void onClick(View v) {
+		// // TODO Auto-generated method stub
+		// // goto ChangeFolderButton
+		//
+		// }
+		//
+		// });
 		// if (savedInstanceState == null) {
 		// // selectItem(0);
 		// }
@@ -217,7 +243,37 @@ public class DisplayBackgroundMusicActivity extends Activity {
 
 		mHandler.sendEmptyMessageDelayed(HIDEALLELEMENTINSCREEN, 5000);
 
+		this.mShuffle = (Button) findViewById(R.id.shuffle);
+		this.mPrevious = (Button) findViewById(R.id.previous);
+		this.mPlayStopMusic = (Button) findViewById(R.id.play_stop_music);
+		this.mNext = (Button) findViewById(R.id.next);
+		this.mRepeat = (Button) findViewById(R.id.repeat);
+
 		monitorBatteryState();
+		
+		mPlayStopMusic.setOnClickListener(new OnClickListener(){
+
+			@Override
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+				
+				if(playing){
+					playing = false;
+					mPlayStopMusic.setBackgroundResource(R.drawable.ic_action_pause);
+					Toast.makeText(mContext, "Pause", Toast.LENGTH_LONG).show();
+					stopAlarm();
+					startAlarm();
+				}
+				else{
+					playing = true;
+					mPlayStopMusic.setBackgroundResource(R.drawable.ic_action_play);
+					Toast.makeText(mContext, "Playing", Toast.LENGTH_LONG).show();
+					stopAlarm();
+					startAlarm();
+				}
+			}
+			
+		});
 	}
 
 	public void hideAll() {
@@ -225,17 +281,22 @@ public class DisplayBackgroundMusicActivity extends Activity {
 				R.anim.fadeout);
 		mActionBar.hide();
 
-		mPreferenceButton.startAnimation(fadeout);
-		mPreferenceButton.setVisibility(View.INVISIBLE);
+		// mPreferenceButton.startAnimation(fadeout);
+		// mPreferenceButton.setVisibility(View.INVISIBLE);
+		//
+		// mLayoutSettingButton.startAnimation(fadeout);
+		// mLayoutSettingButton.setVisibility(View.INVISIBLE);
+		//
+		// mMusicSettingButton.startAnimation(fadeout);
+		// mMusicSettingButton.setVisibility(View.INVISIBLE);
+		//
+		// mChangeFolderButton.startAnimation(fadeout);
+		// mChangeFolderButton.setVisibility(View.INVISIBLE);
 
-		mLayoutSettingButton.startAnimation(fadeout);
-		mLayoutSettingButton.setVisibility(View.INVISIBLE);
+		LinearLayout musicPlayBar = (LinearLayout) findViewById(R.id.musicControlBar);
+		musicPlayBar.startAnimation(fadeout);
+		musicPlayBar.setVisibility(View.INVISIBLE);
 
-		mMusicSettingButton.startAnimation(fadeout);
-		mMusicSettingButton.setVisibility(View.INVISIBLE);
-
-		mChangeFolderButton.startAnimation(fadeout);
-		mChangeFolderButton.setVisibility(View.INVISIBLE);
 		mActionBarOn = false;
 		mHandler.removeMessages(1);
 	}
@@ -260,18 +321,22 @@ public class DisplayBackgroundMusicActivity extends Activity {
 				.loadAnimation(mContext, R.anim.fadein);
 		mActionBar.show();
 
-		mPreferenceButton.setAnimation(fadein);
-		mPreferenceButton.setVisibility(View.VISIBLE);
-
-		mLayoutSettingButton.setAnimation(fadein);
-		mLayoutSettingButton.setVisibility(View.VISIBLE);
-
-		mMusicSettingButton.setAnimation(fadein);
-		mMusicSettingButton.setVisibility(View.VISIBLE);
-
-		mChangeFolderButton.setAnimation(fadein);
-		mChangeFolderButton.setVisibility(View.VISIBLE);
+		// mPreferenceButton.setAnimation(fadein);
+		// mPreferenceButton.setVisibility(View.VISIBLE);
+		//
+		// mLayoutSettingButton.setAnimation(fadein);
+		// mLayoutSettingButton.setVisibility(View.VISIBLE);
+		//
+		// mMusicSettingButton.setAnimation(fadein);
+		// mMusicSettingButton.setVisibility(View.VISIBLE);
+		//
+		// mChangeFolderButton.setAnimation(fadein);
+		// mChangeFolderButton.setVisibility(View.VISIBLE);
 		mActionBarOn = true;
+
+		LinearLayout musicPlayBar = (LinearLayout) findViewById(R.id.musicControlBar);
+		musicPlayBar.startAnimation(fadein);
+		musicPlayBar.setVisibility(View.VISIBLE);
 
 		mHandler.removeMessages(HIDEALLELEMENTINSCREEN);
 		mHandler.sendEmptyMessageDelayed(HIDEALLELEMENTINSCREEN, 5000);
@@ -351,12 +416,7 @@ public class DisplayBackgroundMusicActivity extends Activity {
 			toast2.setGravity(Gravity.CENTER, 0, 0);
 			toast2.show();
 			break;
-		case 3:// Setting
-				// Toast toast3 = Toast.makeText(mContext,
-				// mPreferenceTitle[position],
-				// Toast.LENGTH_SHORT);
-				// toast3.setGravity(Gravity.CENTER, 0, 0);
-				// toast3.show();
+		case 3:
 			Intent intentSettingPreference = new Intent(mContext,
 					SettingPreference.class);
 			startActivity(intentSettingPreference);
@@ -367,12 +427,7 @@ public class DisplayBackgroundMusicActivity extends Activity {
 			toast4.setGravity(Gravity.CENTER, 0, 0);
 			toast4.show();
 			break;
-		case 5:// About
-				// Toast toast5 = Toast.makeText(mContext,
-				// mPreferenceTitle[position],
-				// Toast.LENGTH_SHORT);
-				// toast5.setGravity(Gravity.CENTER, 0, 0);
-				// toast5.show();
+		case 5:
 			Intent intentAboutPreference = new Intent(mContext,
 					AboutPreference.class);
 			startActivity(intentAboutPreference);
@@ -461,9 +516,11 @@ public class DisplayBackgroundMusicActivity extends Activity {
 					case BatteryManager.BATTERY_STATUS_NOT_CHARGING:
 						if (level == 0)
 							sb.append(" needs charging right away.");
-						else if (level > 0 && level <= 33) // add what to do in
-															// this part for low
-															// battery
+						else if (level > 0 && level <= prog) // add what to do
+																// in
+																// this part for
+																// low
+																// battery
 							sb.append(" is about ready to be recharged, battery level is low"
 									+ "[" + level + "]");
 						else
@@ -478,12 +535,9 @@ public class DisplayBackgroundMusicActivity extends Activity {
 					}
 				}
 				sb.append(' ');
-				// Toast.makeText(mContext, sb.toString(),
-				// Toast.LENGTH_SHORT).show();
-				// AlertDialog.Builder ab = new AlertDialog.Builder(mContext);
-				// ab.setTitle(sb);
-				// ab.create();
-				// ab.show();
+				Toast t = Toast.makeText(mContext, sb, Toast.LENGTH_SHORT);
+				t.setGravity(Gravity.CENTER, 0, 0);
+				t.show();
 			}
 		};
 		batteryLevelFilter = new IntentFilter(Intent.ACTION_BATTERY_CHANGED);
@@ -509,6 +563,81 @@ public class DisplayBackgroundMusicActivity extends Activity {
 		// TODO Auto-generated method stub
 		Intent intent = getIntent();
 		// use the data received here
+		getSharedPreferences();
+
+		if (alarmOnOff == true) {
+			stopAlarm();
+			startAlarm();
+		} else {
+			stopAlarm();
+		}
 
 	}
+
+	private void stopAlarm() {
+		// TODO Auto-generated method stub
+		AlarmManager am = (AlarmManager) getSystemService(ALARM_SERVICE);
+		if (mAlarmStopSender != null) {
+			am.cancel(mAlarmStopSender);
+			mAlarmStopSender = null;
+		}
+		if (mAlarmStartSender != null) {
+			am.cancel(mAlarmStartSender);
+			mAlarmStartSender = null;
+		}
+	}
+
+	private void startAlarm() {
+		// TODO Auto-generated method stub
+
+		if (playing == true) {
+			AlarmManager am = (AlarmManager) getSystemService(ALARM_SERVICE);
+			// long firstTime = SystemClock.elapsedRealtime();
+
+			Intent iStop = new Intent(mContext, MusicAlarmControl.class);
+			iStop.putExtra("TYPE", "stopMusic");
+			mAlarmStopSender = PendingIntent.getService(mContext, 0, iStop, 1);
+			Date t = new Date();
+			t.setTime(System.currentTimeMillis());
+			t.setHours(this.stopTimeHour);
+			t.setMinutes(this.stopTimeMinute);
+			t.setSeconds(0);
+			long a = t.getTime();
+			long b = System.currentTimeMillis();
+			if (a > b ) {
+				Toast.makeText(mContext, "Alarm for stop music is set", Toast.LENGTH_SHORT).show();
+				am.set(AlarmManager.RTC_WAKEUP, t.getTime(), mAlarmStopSender);
+			}
+		} else {
+			AlarmManager am = (AlarmManager) getSystemService(ALARM_SERVICE);
+			Intent iStart = new Intent(mContext, MusicAlarmControl.class);
+			iStart.putExtra("TYPE", "startMusic");
+			mAlarmStartSender = PendingIntent
+					.getService(mContext, 0, iStart, 1);
+			Date t = new Date();
+			t.setTime(System.currentTimeMillis());
+			t.setHours(this.startTimeHour);
+			t.setMinutes(this.startTimeMinute);
+			t.setSeconds(0);
+			if (t.getTime() > System.currentTimeMillis()) {
+
+				Toast.makeText(mContext, "Alarm for start music is set", Toast.LENGTH_SHORT).show();
+				am.set(AlarmManager.RTC_WAKEUP, t.getTime(), mAlarmStartSender);
+			}
+		}
+	}
+
+	protected void getSharedPreferences() {
+		SharedPreferences sp = mContext.getSharedPreferences("Setting",
+				MODE_PRIVATE);
+
+		alarmOnOff = sp.getBoolean("ALARM_ON_OFF", false);
+		prog = sp.getInt("PROGRESS_OF_BATTERY", 0);
+		startTimeHour = sp.getInt("START_TIME_HOUR", 0);
+		startTimeMinute = sp.getInt("START_TIME_MUNITE", 0);
+		stopTimeHour = sp.getInt("STOP_TIME_HOUR", 0);
+		stopTimeMinute = sp.getInt("STOP_TIME_MINUTE", 0);
+
+	}
+
 }

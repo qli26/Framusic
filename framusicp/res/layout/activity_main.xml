@@ -22,7 +22,7 @@
             android:layout_centerVertical="true"
             android:text="Display background music"
             android:textColor="#ffffff" />
-
+        <!--
         <LinearLayout
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
@@ -61,6 +61,63 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="Layout Setting" />
+        </LinearLayout>
+        -->
+
+        <LinearLayout
+            android:id="@+id/musicControlBar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            android:background="#1C000000"
+            android:layout_margin="30dp"
+            android:orientation="horizontal" >
+
+            <Button
+                android:id="@+id/shuffle"
+                style="?android:attr/buttonStyleSmall"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:layout_weight="1"
+                android:background="@drawable/ic_action_shuffle" />
+
+            <Button
+                android:id="@+id/previous"
+                style="?android:attr/buttonStyleSmall"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:layout_weight="1"
+                android:background="@drawable/ic_action_previous" />
+
+            <Button
+                android:id="@+id/play_stop_music"
+                style="?android:attr/buttonStyleSmall"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:layout_weight="1"
+                android:background="@drawable/ic_action_play" />
+
+            <Button
+                android:id="@+id/next"
+                style="?android:attr/buttonStyleSmall"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:layout_weight="1"
+                android:background="@drawable/ic_action_next" />
+
+            <Button
+                android:id="@+id/repeat"
+                style="?android:attr/buttonStyleSmall"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:layout_weight="1"
+                android:background="@drawable/ic_action_repeat" />
         </LinearLayout>
     </RelativeLayout>
 

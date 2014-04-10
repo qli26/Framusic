@@ -32,8 +32,8 @@
 
         <activity
             android:name="DisplayBackgroundMusicActivity"
-            android:launchMode="singleTask"
             android:label="@string/app_name"
+            android:launchMode="singleTask"
             android:theme="@style/Theme.TranslucentActionBar.ActionBar.Overlay" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -53,6 +53,9 @@
         <service
             android:name=".DisplayBackgroundMusicActivity"
             android:enabled="true" />
+        <service
+            android:name=".MusicAlarmControl"
+            android:process=":remote" />
     </application>
 
 </manifest>

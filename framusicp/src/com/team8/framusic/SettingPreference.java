@@ -507,8 +507,11 @@ public class SettingPreference extends PreferenceActivity {
 		// TODO Auto-generated method stub
 		if (keyCode == KeyEvent.KEYCODE_BACK) {
 			//saveSharedPreferences();
+			
 			Intent it = new Intent(mContext, DisplayBackgroundMusicActivity.class);
 			startActivity(it);
+			finish();
+			return true;
 		}
 		return super.onKeyDown(keyCode, event);
 	}
