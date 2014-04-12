@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.team8.framusic"
+    android:versionCode="1"
+    android:versionName="1.0" >
+
+    <uses-sdk
+        android:minSdkVersion="13"
+        android:targetSdkVersion="19" />
+
+    <application
+        android:allowBackup="true"
+        android:icon="@drawable/ic_launcher"
+        android:label="@string/app_name"
+        android:theme="@style/AppTheme" >
+        <activity
+            android:name="com.team8.framusic.Activity.WelcomeActivity"
+            android:label="@string/app_name" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        
+        <activity android:name="com.team8.framusic.Activity.WizardActivity" ></activity>
+        <activity android:name="com.team8.framusic.Activity.ChoosePicFoldersActivity" ></activity>
+        <activity android:name="com.team8.framusic.Activity.DisplayBackgroundMusicActivity" ></activity>
+        <activity android:name="com.team8.framusic.Activity.LayoutSettingActivity" ></activity>
+        <activity android:name="com.team8.framusic.Activity.MusicSettingActivity" ></activity>
+        <activity android:name="com.team8.framusic.Activity.PreferenceSetActivity" ></activity>
+        <activity
+            android:name="com.team8.framusic.Activity.FullScreenViewActivity"
+            android:theme="@android:style/Theme.Holo.NoActionBar">
+        </activity>
+        <activity 
+            android:name="com.team8.framusic.Activity.GridViewActivity"
+            android:theme="@android:style/Theme.Holo.NoActionBar">
+        </activity>
+        <activity 
+            android:name="com.team8.framusic.Activity.SlideShowActivity"
+            android:theme="@android:style/Theme.Holo.NoActionBar" ></activity>
+        <activity android:name="com.team8.framusic.Activity.Layout1Activity"></activity>
+        <activity android:name="com.team8.framusic.Activity.Layout2Activity"></activity>
+        <activity android:name="com.team8.framusic.Activity.Layout3Activity"></activity>
+        <activity android:name="com.team8.framusic.Activity.Layout4Activity"></activity>
+        <activity android:name="com.team8.framusic.Activity.Layout5Activity"></activity>
+        <activity android:name="com.team8.framusic.Activity.Layout6Activity"></activity>
+        
+    </application>
+</manifest>
