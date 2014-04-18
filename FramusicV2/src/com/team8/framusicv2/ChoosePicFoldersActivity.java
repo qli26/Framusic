@@ -51,6 +51,7 @@ public class ChoosePicFoldersActivity extends Activity {
 						Bundle b = new Bundle();
 						b.putString("WHO_CALLED_ME",
 								LayoutSettingActivity.class.toString());
+						//b.putStringArrayList("photoschosen", selectedPhoto);
 						intent.putExtra("CALLING_INFO", b);
 						startActivity(intent);
 					}

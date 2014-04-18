@@ -1,6 +1,7 @@
 package com.team8.framusicv2;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -12,6 +13,8 @@ import com.team8.framusicv2.musicplay.MusicPlayer;
 import android.app.ActionBar;
 import android.app.Activity;
 import android.app.AlarmManager;
+import android.app.Notification;
+import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -20,6 +23,7 @@ import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.content.res.Configuration;
+import android.graphics.Bitmap;
 import android.os.BatteryManager;
 import android.os.Bundle;
 import android.os.Handler;
@@ -85,13 +89,15 @@ public class DisplayBackgroundMusicActivity extends Activity {
 	private int stopTimeHour;
 	private int stopTimeMinute;
 
-	private PendingIntent mAlarmStopSender;
-	private PendingIntent mAlarmStartSender;
+	private PendingIntent mAlarmMusicStopSender;
+	private PendingIntent mAlarmMusicStartSender;
 	boolean playing = true;
 	private Button btn_play_or_pause;
 	private Button btn_previous;
 	private Button btn_next;
 	private MusicPlayer musicPlayer;
+	private boolean timeMusicStartChanged = false;
+	private boolean timeMusicStopChanged = false;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -100,6 +106,7 @@ public class DisplayBackgroundMusicActivity extends Activity {
 		this.setContentView(R.layout.screen_display_background_music);
 
 		mContext = this;
+		musicPlayer = new MusicPlayer(mContext);
 		this.getSharedPreferences();
 		this.setFromPreferencesValue();
 		this.saveSharedPreferences();
@@ -201,8 +208,6 @@ public class DisplayBackgroundMusicActivity extends Activity {
 
 		});
 
-		musicPlayer = new MusicPlayer(mContext);
-
 		mPlayStopMusic = (Button) findViewById(R.id.play_stop_music);
 		mPrevious = (Button) findViewById(R.id.previous);
 		mNext = (Button) findViewById(R.id.next);
@@ -211,29 +216,36 @@ public class DisplayBackgroundMusicActivity extends Activity {
 		mPrevious.setOnClickListener(musicListener);
 		mNext.setOnClickListener(musicListener);
 		try {
-			if (playing) {
-				playing = false;
-				musicPlayer.pause();
-				mPlayStopMusic
-						.setBackgroundResource(R.drawable.ic_action_play);
-				Toast.makeText(mContext, "Pause", Toast.LENGTH_LONG)
-						.show();
-				stopAlarm();
-				startAlarm();
-			} else {
-				playing = true;
-				musicPlayer.play();
-				mPlayStopMusic
-						.setBackgroundResource(R.drawable.ic_action_pause);
-				Toast.makeText(mContext, "Playing", Toast.LENGTH_LONG)
-						.show();
-				stopAlarm();
-				startAlarm();
-			}
+			// if (playing) {
+			// playing = false;
+			// musicPlayer.pause();
+			// mPlayStopMusic
+			// .setBackgroundResource(R.drawable.ic_action_play);
+			// Toast.makeText(mContext, "Pause", Toast.LENGTH_LONG)
+			// .show();
+			// stopAlarm();
+			// startAlarm();
+			// } else {
+			// playing = true;
+			musicPlayer.play();
+			mPlayStopMusic.setBackgroundResource(R.drawable.ic_action_pause);
+			Toast.makeText(mContext, "Playing", Toast.LENGTH_LONG).show();
+			// }
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+
+		receiverAlarm = new MyReceiver(musicPlayer);
+		IntentFilter filter = new IntentFilter();
+		filter.addAction("android.intent.action.musicalarm");
+		DisplayBackgroundMusicActivity.this.registerReceiver(receiverAlarm,
+				filter);
+
+		String svcName = Context.NOTIFICATION_SERVICE;
+
+		notificationManager = (NotificationManager) getSystemService(svcName);
+
 	}
 
 	private OnClickListener musicListener = new OnClickListener() {
@@ -243,34 +255,30 @@ public class DisplayBackgroundMusicActivity extends Activity {
 			try {
 				switch (v.getId()) {
 				case R.id.play_stop_music:
-					if (playing) {
-						playing = false;
+					if (musicPlayer.isPlaying()) {
 						musicPlayer.pause();
+						playing = musicPlayer.isPlaying();
 						mPlayStopMusic
 								.setBackgroundResource(R.drawable.ic_action_play);
 						Toast.makeText(mContext, "Pause", Toast.LENGTH_LONG)
 								.show();
-						stopAlarm();
-						startAlarm();
 					} else {
-						playing = true;
 						musicPlayer.play();
+						playing = musicPlayer.isPlaying();
 						mPlayStopMusic
 								.setBackgroundResource(R.drawable.ic_action_pause);
 						Toast.makeText(mContext, "Playing", Toast.LENGTH_LONG)
 								.show();
-						stopAlarm();
-						startAlarm();
 					}
 					break;
 				case R.id.previous:
 					mPlayStopMusic
-					.setBackgroundResource(R.drawable.ic_action_pause);
+							.setBackgroundResource(R.drawable.ic_action_pause);
 					musicPlayer.previous();
 					break;
 				case R.id.next:
 					mPlayStopMusic
-					.setBackgroundResource(R.drawable.ic_action_pause);
+							.setBackgroundResource(R.drawable.ic_action_pause);
 					musicPlayer.next();
 					break;
 				}
@@ -279,6 +287,9 @@ public class DisplayBackgroundMusicActivity extends Activity {
 			}
 		}
 	};
+	private boolean stopSlidingShow;
+	private boolean stopPlayingMusic;
+	private boolean quitFramusic;
 
 	private void processExtraData() {
 		// TODO Auto-generated method stub
@@ -286,12 +297,15 @@ public class DisplayBackgroundMusicActivity extends Activity {
 		// use the data received here
 		getSharedPreferences();
 		Bundle b = intent.getBundleExtra("CALLING_INFO");
+		// ArrayList<String> selectedPhotos=
+		// b.getStringArrayList("photoschosen");
 		if (b != null) {
 			mWhoCalledMe = b.getString("WHO_CALLED_ME");
 		}
+
 		if (alarmOnOff == true) {
-			stopAlarm();
-			startAlarm();
+			startMusicAlarm();
+			stopMusicAlarm();
 		} else {
 			stopAlarm();
 		}
@@ -302,6 +316,36 @@ public class DisplayBackgroundMusicActivity extends Activity {
 				MODE_PRIVATE);
 
 		mFirstTimeOpen = sp.getBoolean("FIRST_TIME_OPEN", true);
+		prog = sp.getInt("PROGRESS_OF_BATTERY", prog);
+
+		int tempStartTimeHour = sp.getInt("START_TIME_HOUR", 0);
+		int tempStartTimeMinute = sp.getInt("START_TIME_MUNITE", 0);
+		int tempStopTimeHour = sp.getInt("STOP_TIME_HOUR", 0);
+		int tempStopTimeMinute = sp.getInt("STOP_TIME_MINUTE", 0);
+
+		if (startTimeHour != tempStartTimeHour
+				|| startTimeMinute != tempStartTimeMinute) {
+			startTimeHour = tempStartTimeHour;
+			startTimeMinute = tempStartTimeMinute;
+			timeMusicStartChanged = true;
+		} else {
+			timeMusicStartChanged = false;
+		}
+
+		if (stopTimeHour != tempStopTimeHour
+				|| stopTimeMinute != tempStopTimeMinute) {
+			stopTimeHour = tempStopTimeHour;
+			stopTimeMinute = tempStopTimeMinute;
+			timeMusicStopChanged = true;
+		} else {
+			timeMusicStopChanged = false;
+		}
+
+		stopSlidingShow = sp.getBoolean("STOP_SLIDING_SHOW", stopSlidingShow);
+		stopPlayingMusic = sp
+				.getBoolean("STOP_PLAYING_MUSIC", stopPlayingMusic);
+		quitFramusic = sp.getBoolean("QUIT_FRAMUSIC", quitFramusic);
+		alarmOnOff = sp.getBoolean("ALARM_ON_OFF", alarmOnOff);
 	}
 
 	protected void setFromPreferencesValue() {
@@ -309,6 +353,7 @@ public class DisplayBackgroundMusicActivity extends Activity {
 		if (this.mFirstTimeOpen == true) {
 			this.mFirstTimeOpen = false;
 		}
+
 		System.out.println();
 	}
 
@@ -318,6 +363,17 @@ public class DisplayBackgroundMusicActivity extends Activity {
 
 		Editor editor = sp.edit();
 		editor.putBoolean("FIRST_TIME_OPEN", mFirstTimeOpen);
+
+		editor.putInt("PROGRESS_OF_BATTERY", prog);
+		editor.putInt("START_TIME_HOUR", startTimeHour);
+		editor.putInt("START_TIME_MUNITE", startTimeMinute);
+		editor.putInt("STOP_TIME_HOUR", stopTimeHour);
+		editor.putInt("STOP_TIME_MINUTE", stopTimeMinute);
+		editor.putBoolean("STOP_SLIDING_SHOW", stopSlidingShow);
+		editor.putBoolean("STOP_PLAYING_MUSIC", stopPlayingMusic);
+		editor.putBoolean("QUIT_FRAMUSIC", quitFramusic);
+		editor.putBoolean("ALARM_ON_OFF", alarmOnOff);
+		editor.commit();
 		editor.commit();
 	}
 
@@ -556,8 +612,40 @@ public class DisplayBackgroundMusicActivity extends Activity {
 																// this part for
 																// low
 																// battery
+						{
+
 							sb.append(" is about ready to be recharged, battery level is low"
 									+ "[" + level + "]");
+							if (stopSlidingShow) {
+								// add code for stop sliding show
+								sb.append(": stop sliding show");
+								Toast t = Toast.makeText(mContext, sb,
+										Toast.LENGTH_LONG);
+								t.setGravity(Gravity.CENTER, 0, 0);
+								t.show();
+							}
+							if (stopPlayingMusic) {
+								sb.append(": stop music");
+								musicPlayer.pause();
+								mPlayStopMusic
+										.setBackgroundResource(R.drawable.ic_action_play);
+								Toast t = Toast.makeText(mContext, sb,
+										Toast.LENGTH_LONG);
+								t.setGravity(Gravity.CENTER, 0, 0);
+								t.show();
+							}
+							if (quitFramusic) {
+								sb.append(": quit app");
+								Toast t = Toast.makeText(mContext, sb,
+										Toast.LENGTH_LONG);
+								t.setGravity(Gravity.CENTER, 0, 0);
+								t.show();
+								quitFramusic = false;
+								saveSharedPreferences();
+								finish();
+							}
+						}
+
 						else
 							sb.append("'s battery level is" + "[" + level + "]");
 						break;
@@ -569,10 +657,10 @@ public class DisplayBackgroundMusicActivity extends Activity {
 						break;
 					}
 				}
-				sb.append(' ');
-				Toast t = Toast.makeText(mContext, sb, Toast.LENGTH_SHORT);
-				t.setGravity(Gravity.CENTER, 0, 0);
-				t.show();
+				// sb.append(' ');
+				// Toast t = Toast.makeText(mContext, sb, Toast.LENGTH_LONG);
+				// t.setGravity(Gravity.CENTER, 0, 0);
+				// t.show();
 			}
 		};
 		batteryLevelFilter = new IntentFilter(Intent.ACTION_BATTERY_CHANGED);
@@ -597,26 +685,56 @@ public class DisplayBackgroundMusicActivity extends Activity {
 	private void stopAlarm() {
 		// TODO Auto-generated method stub
 		AlarmManager am = (AlarmManager) getSystemService(ALARM_SERVICE);
-		if (mAlarmStopSender != null) {
-			am.cancel(mAlarmStopSender);
-			mAlarmStopSender = null;
+		if (mAlarmMusicStopSender != null) {
+			am.cancel(mAlarmMusicStopSender);
+			mAlarmMusicStopSender = null;
+			
 		}
-		if (mAlarmStartSender != null) {
-			am.cancel(mAlarmStartSender);
-			mAlarmStartSender = null;
+		if (mAlarmMusicStartSender != null) {
+			am.cancel(mAlarmMusicStartSender);
+			mAlarmMusicStartSender = null;
+
 		}
 	}
 
-	private void startAlarm() {
+	private void startMusicAlarm() {// start the alarm for starting music
 		// TODO Auto-generated method stub
+		// add notification bar
+		AlarmManager am = (AlarmManager) getSystemService(ALARM_SERVICE);
+		Intent iStart = new Intent(mContext, MusicAlarmControl.class);
+		iStart.putExtra("TYPE", "toStartMusic");
 
-		if (playing == true) {
-			AlarmManager am = (AlarmManager) getSystemService(ALARM_SERVICE);
-			// long firstTime = SystemClock.elapsedRealtime();
+		if (timeMusicStartChanged) {
+			mAlarmMusicStartSender = PendingIntent.getService(mContext, 0,
+					iStart, 1);
+			Date t = new Date();
+			t.setTime(System.currentTimeMillis());
+			t.setHours(this.startTimeHour);
+			t.setMinutes(this.startTimeMinute);
+			t.setSeconds(0);
+			if (t.getTime() > System.currentTimeMillis()) {
+				Toast.makeText(mContext, "Alarm for starting music is set",
+						Toast.LENGTH_SHORT).show();
+				am.set(AlarmManager.RTC_WAKEUP, t.getTime(),
+						mAlarmMusicStartSender);
+				triggerNotification(
+						customLayoutNotification("Music alarm",
+								"Music will start at", t.toString(), ""),
+						NOTIFICATION_REF_STARTMUSICALARM);
+			}
+		}
+	}
 
-			Intent iStop = new Intent(mContext, MusicAlarmControl.class);
-			iStop.putExtra("TYPE", "stopMusic");
-			mAlarmStopSender = PendingIntent.getService(mContext, 0, iStop, 1);
+	private void stopMusicAlarm() {// start the alarm for stopping music
+		// TODO Auto-generated method stub
+		// add notification bar
+		AlarmManager am = (AlarmManager) getSystemService(ALARM_SERVICE);
+		Intent iStop = new Intent(mContext, MusicAlarmControl.class);
+		iStop.putExtra("TYPE", "toStopMusic");
+
+		if (timeMusicStopChanged) {
+			mAlarmMusicStopSender = PendingIntent.getService(mContext, 1,
+					iStop, 1);
 			Date t = new Date();
 			t.setTime(System.currentTimeMillis());
 			t.setHours(this.stopTimeHour);
@@ -627,26 +745,111 @@ public class DisplayBackgroundMusicActivity extends Activity {
 			if (a > b) {
 				Toast.makeText(mContext, "Alarm for stop music is set",
 						Toast.LENGTH_SHORT).show();
-				am.set(AlarmManager.RTC_WAKEUP, t.getTime(), mAlarmStopSender);
-			}
-		} else {
-			AlarmManager am = (AlarmManager) getSystemService(ALARM_SERVICE);
-			Intent iStart = new Intent(mContext, MusicAlarmControl.class);
-			iStart.putExtra("TYPE", "startMusic");
-			mAlarmStartSender = PendingIntent
-					.getService(mContext, 0, iStart, 1);
-			Date t = new Date();
-			t.setTime(System.currentTimeMillis());
-			t.setHours(this.startTimeHour);
-			t.setMinutes(this.startTimeMinute);
-			t.setSeconds(0);
-			if (t.getTime() > System.currentTimeMillis()) {
-
-				Toast.makeText(mContext, "Alarm for start music is set",
-						Toast.LENGTH_SHORT).show();
-				am.set(AlarmManager.RTC_WAKEUP, t.getTime(), mAlarmStartSender);
+				am.set(AlarmManager.RTC_WAKEUP, t.getTime(),
+						mAlarmMusicStopSender);
+				triggerNotification(
+						customLayoutNotification("Music alarm",
+								"Music will stop at", t.toString(), ""),
+						NOTIFICATION_REF_STOPMUSICALARM);
 			}
 		}
 	}
 
+	private MyReceiver receiverAlarm;
+
+	public class MyReceiver extends BroadcastReceiver {
+		MusicPlayer mp = new MusicPlayer();
+
+		// receiver
+		@Override
+		public void onReceive(Context context, Intent intent) {
+			// TODO Auto-generated method stub
+			System.out.println("OnReceiver");
+			Bundle bundle = intent.getExtras();
+			String myType = bundle.getString("MusicAlarmControl");
+
+			if (myType.equals("toStartMusic")) {
+				System.out.println(myType);
+				if (!mp.isPlaying()) {
+					try {
+						mp.play();
+						playing = musicPlayer.isPlaying();
+						mPlayStopMusic
+								.setBackgroundResource(R.drawable.ic_action_pause);
+						Toast.makeText(mContext, "Playing", Toast.LENGTH_LONG)
+								.show();
+						cancelNotification(notificationManager,
+								NOTIFICATION_REF_STARTMUSICALARM);
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+			} else if (myType.equals("toStopMusic")) {
+				System.out.println(myType);
+				mp.pause();
+				cancelNotification(notificationManager,
+						NOTIFICATION_REF_STOPMUSICALARM);
+			}
+		}
+
+		public MyReceiver(MusicPlayer mp) {
+			System.out.println("MyReceiver set mp");
+			// constructor
+			this.mp = mp;
+		}
+	}
+
+	private static final String BUTTON_CLICK_ACTION = "com.team8.framusicv2.action.BUTTON_CLICK";
+	NotificationManager notificationManager;
+
+	private void triggerNotification(Notification.Builder builder,
+			int NOTIFICATION_REF) {
+		/**
+		 * Listing 10-43: Triggering a Notification
+		 */
+		String svc = Context.NOTIFICATION_SERVICE;
+
+		NotificationManager notificationManager = (NotificationManager) getSystemService(svc);
+
+		Notification notification = builder.getNotification();
+
+		notificationManager.notify(NOTIFICATION_REF, notification);
+	}
+
+	private Notification.Builder customLayoutNotification(String notification,
+			String title, String subtitle, String info) {
+		Notification.Builder builder = new Notification.Builder(
+				DisplayBackgroundMusicActivity.this);
+
+		Intent newIntent = new Intent(BUTTON_CLICK_ACTION);
+		PendingIntent pendingIntent = PendingIntent.getBroadcast(
+				DisplayBackgroundMusicActivity.this, 2, newIntent, 0);
+		Bitmap myIconBitmap = null; // TODO Obtain Bitmap
+
+		/**
+		 * Listing 10-36: Applying a custom layout to the Notification status
+		 * window
+		 */
+		builder.setSmallIcon(R.drawable.ic_launcher).setTicker(notification)
+				.setWhen(System.currentTimeMillis()).setContentTitle(title)
+				.setContentText(subtitle).setContentInfo(info)
+				.setLargeIcon(myIconBitmap).setContentIntent(pendingIntent);
+
+		//
+		return builder;
+	}
+
+	private void cancelNotification(NotificationManager notificationManager,
+			int NOTIFICATION_REF) {
+		/**
+		 * Listing 10-46: Canceling a Notification
+		 */
+		System.out.println("close notification");
+		notificationManager.cancel(NOTIFICATION_REF);
+
+	}
+
+	int NOTIFICATION_REF_STARTMUSICALARM = 1;
+	int NOTIFICATION_REF_STOPMUSICALARM = 2;
 }
