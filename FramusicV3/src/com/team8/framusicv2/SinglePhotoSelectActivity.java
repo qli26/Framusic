@@ -110,7 +110,7 @@ public class SinglePhotoSelectActivity extends BaseActivity {
 	private void startActivityToLayouts(String whoCalledMe2, int position2,
 			String PicPath) {
 		// TODO Auto-generated method stub
-		//if(whoCalledMe2.equals("Layout3Activity")){
+		if(whoCalledMe2.contains("Layout3Activity")){
 			Intent i = new Intent(this,Layout3Activity.class);
 			Bundle b = new Bundle();
 			b.putInt("position", position2);
@@ -118,7 +118,16 @@ public class SinglePhotoSelectActivity extends BaseActivity {
 			i.putExtra("Bundle", b);
 			startActivity(i);
 			finish();
-		//}
+		}
+		else if(whoCalledMe2.contains("Layout2Activity")){
+			Intent i = new Intent(this,Layout2Activity.class);
+			Bundle b = new Bundle();
+			b.putInt("position", position2);
+			b.putString("PicPath", PicPath);
+			i.putExtra("Bundle", b);
+			startActivity(i);
+			finish();
+		}
 	}
 
 	public class ImageAdapter extends BaseAdapter {

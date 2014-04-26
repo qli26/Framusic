@@ -37,6 +37,17 @@ public class LayoutSettingActivity extends Activity {
 			}
 		});
 		
+		ImageButton layout2 = (ImageButton) findViewById(R.id.layout2);
+		layout2.setOnClickListener(new OnClickListener(){
+
+			@Override
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+				Intent intent = new Intent(mContext, Layout2Activity.class);
+				startActivity(intent);
+			}
+		});
+		
 		Button done = (Button) findViewById(R.id.btn_done);
 		done.setOnClickListener(new OnClickListener() {
 

@@ -30,7 +30,6 @@ public class Layout3Activity extends Activity {
 
 		this.setContentView(R.layout.layout3);
 		mContext = this;
-		getImages();
 		findViews();
 		setListeners();
 	}
@@ -38,13 +37,6 @@ public class Layout3Activity extends Activity {
 	Button btn1, btn2, btn3, btn4, btn_save;
 	ImageView image1, image2, image3, image4;
 	Bitmap bm1, bm2, bm3, bm4;
-	Uri murl;
-
-	private void getImages() {
-		File sdCard = Environment.getExternalStorageDirectory();
-		File file = new File(sdCard, "cat.jpg");
-		murl = Uri.parse(file.getPath());
-	}
 
 	private void setImage(int position, String path) throws IOException {
 		File file = new File(path);

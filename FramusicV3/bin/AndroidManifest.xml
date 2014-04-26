@@ -74,6 +74,11 @@
             android:launchMode="singleTask"
             android:theme="@android:style/Theme.Holo" >
         </activity>
+        <activity 
+            android:name=".Layout2Activity"
+            android:launchMode="singleTask"
+            android:theme="@android:style/Theme.Holo">
+        </activity>
         <activity
             android:name=".BaseActivity"
             android:launchMode="singleTask" >
