@@ -28,7 +28,7 @@ import com.nostra13.universalimageloader.core.assist.SimpleImageLoadingListener;
 
 public class MultiPhotoSelectActivity extends BaseActivity {
 
- private ArrayList<String> imageUrls;
+ private ArrayList<String> imageUrls;//
  private DisplayImageOptions options;
  private ImageAdapter imageAdapter;
 

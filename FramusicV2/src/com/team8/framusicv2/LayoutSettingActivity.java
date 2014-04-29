@@ -1,5 +1,7 @@
 package com.team8.framusicv2;
 
+import java.util.ArrayList;
+
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -84,6 +86,7 @@ public class LayoutSettingActivity extends Activity {
 		// use the data received here
 		getSharedPreferences();
 		Bundle b = intent.getBundleExtra("CALLING_INFO");
+		ArrayList<String> selectedItems = b.getStringArrayList("photos");
 		mWhoCalledMe = b.getString("WHO_CALLED_ME");
 	}
 

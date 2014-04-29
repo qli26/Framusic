@@ -9,8 +9,9 @@ package com.team8.framusicv2;
 
 public final class R {
     public static final class anim {
-        public static final int fadein=0x7f040000;
-        public static final int fadeout=0x7f040001;
+        public static final int fade_in=0x7f040000;
+        public static final int fadein=0x7f040001;
+        public static final int fadeout=0x7f040002;
     }
     public static final class array {
         public static final int preference_array=0x7f080000;
@@ -42,38 +43,43 @@ public final class R {
         public static final int ic_action_shuffle=0x7f02000b;
         public static final int ic_drawer=0x7f02000c;
         public static final int ic_launcher=0x7f02000d;
-        public static final int line=0x7f02000e;
+        public static final int image_for_empty_url=0x7f02000e;
+        public static final int line=0x7f02000f;
+        public static final int stub_image=0x7f020010;
     }
     public static final class id {
         public static final int Cancel=0x7f0b0002;
         public static final int ContentOfElements=0x7f0b0005;
         public static final int Ok=0x7f0b0003;
+        public static final int PhoneMusicList=0x7f0b001c;
         public static final int SettingImage=0x7f0b0006;
         public static final int SettingLineImage=0x7f0b0004;
         public static final int SettingTitle=0x7f0b0007;
-        public static final int action_settings=0x7f0b001c;
+        public static final int action_settings=0x7f0b001f;
         public static final int batteryText=0x7f0b0000;
-        public static final int button1=0x7f0b001a;
-        public static final int button2=0x7f0b0009;
-        public static final int button4=0x7f0b0016;
-        public static final int button6=0x7f0b0018;
-        public static final int content_frame=0x7f0b000b;
-        public static final int drawer_layout=0x7f0b000a;
-        public static final int left_drawer=0x7f0b0014;
-        public static final int musicControlBar=0x7f0b000e;
-        public static final int next=0x7f0b0012;
-        public static final int play_stop_music=0x7f0b0011;
-        public static final int previous=0x7f0b0010;
-        public static final int repeat=0x7f0b0013;
-        public static final int reset=0x7f0b000d;
+        public static final int button1=0x7f0b000b;
+        public static final int button2=0x7f0b000c;
+        public static final int button4=0x7f0b0019;
+        public static final int button6=0x7f0b001a;
+        public static final int checkBox1=0x7f0b0009;
+        public static final int content_frame=0x7f0b000e;
+        public static final int drawer_layout=0x7f0b000d;
+        public static final int findSelected=0x7f0b001b;
+        public static final int gridview=0x7f0b000a;
+        public static final int imageView1=0x7f0b0008;
+        public static final int left_drawer=0x7f0b0017;
+        public static final int musicControlBar=0x7f0b0011;
+        public static final int next=0x7f0b0015;
+        public static final int play_stop_music=0x7f0b0014;
+        public static final int previous=0x7f0b0013;
+        public static final int repeat=0x7f0b0016;
+        public static final int reset=0x7f0b0010;
         public static final int seekBar1=0x7f0b0001;
-        public static final int shuffle=0x7f0b000f;
-        public static final int textView1=0x7f0b0019;
-        public static final int textView2=0x7f0b0008;
-        public static final int textView3=0x7f0b000c;
-        public static final int textView4=0x7f0b0015;
-        public static final int textView6=0x7f0b0017;
-        public static final int timePicker1=0x7f0b001b;
+        public static final int shuffle=0x7f0b0012;
+        public static final int textView1=0x7f0b001d;
+        public static final int textView3=0x7f0b000f;
+        public static final int textView4=0x7f0b0018;
+        public static final int timePicker1=0x7f0b001e;
     }
     public static final class layout {
         public static final int blank=0x7f030000;
@@ -81,14 +87,15 @@ public final class R {
         public static final int drawer_list_element=0x7f030002;
         public static final int preference=0x7f030003;
         public static final int preferenceaboutimage=0x7f030004;
-        public static final int screen_choose_pic_folders=0x7f030005;
-        public static final int screen_display_background_music=0x7f030006;
-        public static final int screen_layout_setting=0x7f030007;
-        public static final int screen_music_setting=0x7f030008;
-        public static final int screen_welcome=0x7f030009;
-        public static final int screen_wizard=0x7f03000a;
-        public static final int settingpreference=0x7f03000b;
-        public static final int timepicker=0x7f03000c;
+        public static final int row_multiphoto_item=0x7f030005;
+        public static final int screen_choose_pic_folders=0x7f030006;
+        public static final int screen_display_background_music=0x7f030007;
+        public static final int screen_layout_setting=0x7f030008;
+        public static final int screen_music_setting=0x7f030009;
+        public static final int screen_welcome=0x7f03000a;
+        public static final int screen_wizard=0x7f03000b;
+        public static final int settingpreference=0x7f03000c;
+        public static final int timepicker=0x7f03000d;
     }
     public static final class menu {
         public static final int welcome_page=0x7f0a0000;
