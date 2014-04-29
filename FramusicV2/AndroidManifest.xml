@@ -7,7 +7,8 @@
     <uses-sdk
         android:minSdkVersion="14"
         android:targetSdkVersion="19" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
     <application
         android:allowBackup="true"
@@ -37,6 +38,9 @@
             android:label="@string/app_name"
             android:launchMode="singleTask"
             android:theme="@style/Theme.TranslucentActionBar.ActionBar.Overlay" >
+            <intent-filter>
+                <action android:name="android.intent.action.musicalarm" />
+            </intent-filter>
         </activity>
         <activity
             android:name=".LayoutSettingActivity"
@@ -58,9 +62,11 @@
         <service
             android:name=".DisplayBackgroundMusicActivity"
             android:enabled="true" />
-        <service
-            android:name=".MusicAlarmControl"
-            android:process=":remote" />
+        <service android:name=".MusicStopAlarmControl" />
+        <service android:name=".MusicAlarmControl" />
+        <!-- android:process=":remote" /> -->
+        <receiver android:name=".musicplay.MyReceiver" >
+        </receiver>
     </application>
 
 </manifest>

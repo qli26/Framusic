@@ -2,6 +2,7 @@ package com.team8.framusicv2.musicplay;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
@@ -9,9 +10,11 @@ import java.util.regex.Pattern;
 import android.content.Context;
 import android.media.MediaPlayer;
 import android.os.Environment;
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.widget.Toast;
 
-public class MusicPlayer {
+public class MusicPlayer implements Parcelable {
 	private String filename;
 	private MediaPlayer mediaPlayer;
 	private int currentPosition;
@@ -40,6 +43,9 @@ public class MusicPlayer {
 				System.out.println("");
 			}
 		}
+	}
+	public MusicPlayer() {
+		mediaPlayer = new MediaPlayer();	
 	}
 
 	protected void destroyPlayer() {
@@ -110,6 +116,22 @@ public class MusicPlayer {
 				e.printStackTrace();
 			}
 		}
+	}
+	
+	public boolean isPlaying(){
+		return mediaPlayer.isPlaying();
+	}
+
+	@Override
+	public int describeContents() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public void writeToParcel(Parcel dest, int flags) {
+		// TODO Auto-generated method stub
+		
 	}
 
 	/**
