@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Framusic2</string>
+    <string name="action_settings">Settings</string>
+    <string name="hello_world">Hello world!</string>
+ <string-array name="titles">
+       <item>introduction</item>
+        <item>layout</item>
+         <item>preferences</item>
+          <item>music setting</item>
+        </string-array>
+        
+     <string-array name="descriptions">
+       <item>Hello and Welcome to Framusic World!!!
+           This will help you create frames of pictures with music</item>
+        <item>Here u can select the lay out for the frame......</item>
+         <item>Guide you to the various settings provided by our app</item>
+          <item>Here you can select teh music which you want to play ........</item>
+        </string-array>
+</resources>
